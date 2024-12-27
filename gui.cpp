@@ -8,9 +8,9 @@
 
 namespace gui {
 	bool g_Hotkeys[512];
-	bool g_KeysPressed[256];
-	bool g_KeysReleased[256];
-	bool g_KeysDown[256];
+	bool g_KeysPressed[512];
+	bool g_KeysReleased[512];
+	bool g_KeysDown[512];
 	HWND g_CurrentFocused;
 	HWND g_MainWindow;
 	bool try_close = false;
@@ -90,43 +90,58 @@ namespace gui {
 		if (window == nullptr)return false;
 		return ShowWindow(window, SW_HIDE);
 	}
+
 	void update_window(HWND window, bool wait_event)
 	{
 		MSG msg;
-		UpdateWindow(window);
+
+		ZeroMemory(&msg, sizeof(MSG));
+
 		if (wait_event)
 			GetMessage(&msg, NULL, 0, 0);
 		else
 			PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
-		switch (msg.message) {
-		case WM_HOTKEY: {
-			g_Hotkeys[msg.wParam] = true;
-		}
-		case WM_KEYDOWN:
-			g_KeysDown[msg.wParam] = true;
-			if (g_KeysPressed[msg.wParam] == false && g_KeysReleased[msg.wParam] == true && g_KeysDown[msg.wParam] == true)
-			{
-				g_KeysPressed[msg.wParam] = true;
-				g_KeysReleased[msg.wParam] = false;
-			}
-			else if (g_KeysReleased[msg.wParam] == false)
-			{
-				g_KeysPressed[msg.wParam] = false;
-			}
-			break;
-		case WM_KEYUP:
-			g_KeysDown[msg.wParam] = false;
-			g_KeysPressed[msg.wParam] = false;
-			g_KeysReleased[msg.wParam] = true;
-			break;
-		}
-		if (!IsDialogMessage(window, &msg))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
 
-			if (GetForegroundWindow() == window) {
-				g_CurrentFocused = GetFocus();
+		if (msg.message != WM_NULL) {
+			switch (msg.message) {
+			case WM_HOTKEY:
+				if (msg.wParam < 512) {
+					g_Hotkeys[msg.wParam] = true;
+				}
+				break;
+
+			case WM_KEYDOWN:
+				if (msg.wParam < 512) {
+					g_KeysDown[msg.wParam] = true;
+					if (!g_KeysPressed[msg.wParam] && g_KeysReleased[msg.wParam]) {
+						g_KeysPressed[msg.wParam] = true;
+						g_KeysReleased[msg.wParam] = false;
+					}
+					else if (!g_KeysReleased[msg.wParam]) {
+						g_KeysPressed[msg.wParam] = false;
+					}
+				}
+				break;
+
+			case WM_KEYUP:
+				if (msg.wParam < 512) {
+					g_KeysDown[msg.wParam] = false;
+					g_KeysPressed[msg.wParam] = false;
+					g_KeysReleased[msg.wParam] = true;
+				}
+				break;
+
+			default:
+				break;
+			}
+
+			if (!IsDialogMessage(window, &msg)) {
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+
+				if (GetForegroundWindow() == window) {
+					g_CurrentFocused = GetFocus();
+				}
 			}
 		}
 	}
