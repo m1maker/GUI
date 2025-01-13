@@ -1,4 +1,5 @@
-﻿#include<chrono>
+﻿#include "gui.h"
+#include<chrono>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -320,70 +321,63 @@ namespace gui {
 		}
 		return false;
 	}
-	void wait(int time)
-	{
-		std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
-		int elapsed = 0;
 
-		while (elapsed < time)
-		{
+	void wait(int time) {
+		timer t;
+		for (int64_t i = 0; i < time; ++i) {
+			if (t.elapsed() > time)break;
+			Sleep(1);
 			update_window(g_MainWindow, false);
-			elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime).count();
+		}
+		update_window(g_MainWindow, false);
+	}
+
+	timer::timer()
+	{
+		restart();
+	}
+
+	int timer::elapsed()
+	{
+		if (paused != 0)
+		{
+			return paused;
+		}
+		else
+		{
+			return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - initTime).count();
 		}
 	}
 
-	class timer
+	void timer::elapsed(int amount)
 	{
-	public:
-		std::chrono::steady_clock::time_point initTime = std::chrono::steady_clock::now();
-
-		int paused = false;
-		timer()
+		if (paused == 0)
 		{
-			restart();
+			initTime = std::chrono::steady_clock::now() - std::chrono::milliseconds(amount);
 		}
-
-		int elapsed()
+		else
 		{
-			if (paused != 0)
-			{
-				return paused;
-			}
-			else
-			{
-				return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - initTime).count();
-			}
+			paused = amount;
 		}
+	}
 
-		void elapsed(int amount)
-		{
-			if (paused == 0)
-			{
-				initTime = std::chrono::steady_clock::now() - std::chrono::milliseconds(amount);
-			}
-			else
-			{
-				paused = amount;
-			}
-		}
+	void timer::restart()
+	{
+		initTime = std::chrono::steady_clock::now();
+		paused = 0;
+	}
 
-		void restart()
-		{
-			initTime = std::chrono::steady_clock::now();
-			paused = 0;
-		}
+	void timer::pause()
+	{
+		paused = elapsed();
+	}
 
-		void pause()
-		{
-			paused = elapsed();
-		}
+	void timer::resume()
+	{
+		initTime = std::chrono::steady_clock::now() - std::chrono::milliseconds(paused);
+		paused = 0;
+	}
 
-		void resume()
-		{
-			initTime = std::chrono::steady_clock::now() - std::chrono::milliseconds(paused);
-			paused = 0;
-		}
-	};
 
 	void add_list_item(HWND hwndList, LPCTSTR lpszItem)
 	{
