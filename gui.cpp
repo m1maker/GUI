@@ -445,7 +445,7 @@ namespace gui {
 		return CreateWindow(
 			TEXT("BUTTON"),
 			lpszCaption,
-			WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | WS_TABSTOP,
+			WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX | WS_TABSTOP,
 			x,
 			y,
 			width,
