@@ -398,6 +398,7 @@ namespace gui {
 		{
 			text.resize(nLength + 1);
 			GetWindowText(hwndEdit, &text[0], nLength + 1);
+			text.resize(nLength);
 		}
 		return text;
 	}
