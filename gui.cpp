@@ -418,7 +418,7 @@ namespace gui {
 			width,
 			height,
 			hwndParent,
-			(HMENU)id,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
 			NULL,
 			NULL
 		);
@@ -435,7 +435,7 @@ namespace gui {
 			width,
 			height,
 			hwndParent,
-			(HMENU)id,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
 			NULL,
 			NULL
 		);
@@ -452,7 +452,7 @@ namespace gui {
 			width,
 			height,
 			hwndParent,
-			(HMENU)id,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
 			NULL,
 			NULL
 		);
@@ -476,7 +476,7 @@ namespace gui {
 			width,
 			height,
 			hwndParent,
-			(HMENU)id,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
 			NULL,
 			NULL
 		);
@@ -496,7 +496,7 @@ namespace gui {
 			width,
 			height,
 			hwndParent,
-			(HMENU)id,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
 			NULL,
 			NULL
 		);
