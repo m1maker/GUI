@@ -349,13 +349,13 @@ namespace gui {
 			const auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
 				std::chrono::steady_clock::now() - initTime
 			).count();
-			if (elapsed_ms > std::numeric_limits<int>::max())
+			if (elapsed_ms > (std::numeric_limits<int>::max)())
 			{
-				return std::numeric_limits<int>::max();
+				return (std::numeric_limits<int>::max)();
 			}
-			if (elapsed_ms < std::numeric_limits<int>::min())
+			if (elapsed_ms < (std::numeric_limits<int>::min)())
 			{
-				return std::numeric_limits<int>::min();
+				return (std::numeric_limits<int>::min)();
 			}
 			return static_cast<int>(elapsed_ms);
 		}
