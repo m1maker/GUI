@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <limits>
 #include <Windows.h>
 
 namespace gui {
@@ -345,7 +346,18 @@ namespace gui {
 		}
 		else
 		{
-			return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - initTime).count();
+			const auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+				std::chrono::steady_clock::now() - initTime
+			).count();
+			if (elapsed_ms > (std::numeric_limits<int>::max)())
+			{
+				return (std::numeric_limits<int>::max)();
+			}
+			if (elapsed_ms < (std::numeric_limits<int>::min)())
+			{
+				return (std::numeric_limits<int>::min)();
+			}
+			return static_cast<int>(elapsed_ms);
 		}
 	}
 
@@ -418,7 +430,7 @@ namespace gui {
 			width,
 			height,
 			hwndParent,
-			(HMENU)id,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
 			NULL,
 			NULL
 		);
@@ -435,7 +447,7 @@ namespace gui {
 			width,
 			height,
 			hwndParent,
-			(HMENU)id,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
 			NULL,
 			NULL
 		);
@@ -452,7 +464,7 @@ namespace gui {
 			width,
 			height,
 			hwndParent,
-			(HMENU)id,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
 			NULL,
 			NULL
 		);
@@ -476,7 +488,7 @@ namespace gui {
 			width,
 			height,
 			hwndParent,
-			(HMENU)id,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
 			NULL,
 			NULL
 		);
@@ -496,7 +508,7 @@ namespace gui {
 			width,
 			height,
 			hwndParent,
-			(HMENU)id,
+			reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
 			NULL,
 			NULL
 		);
@@ -514,7 +526,7 @@ namespace gui {
 
 	void delete_list_selections(HWND hwndList)
 	{
-		int count = SendMessage(hwndList, LB_GETSELCOUNT, 0, 0);
+		const int count = static_cast<int>(SendMessage(hwndList, LB_GETSELCOUNT, 0, 0));
 		if (count > 0)
 		{
 			std::vector<int> selections(count);
@@ -550,15 +562,15 @@ namespace gui {
 
 	int get_list_position(HWND hwndList)
 	{
-		return SendMessage(hwndList, LB_GETCURSEL, 0, 0);
+		return static_cast<int>(SendMessage(hwndList, LB_GETCURSEL, 0, 0));
 	}
 
 	std::wstring get_focused_list_item_name(HWND hwndList)
 	{
-		int focusedIndex = SendMessage(hwndList, LB_GETCURSEL, 0, 0);
+		const int focusedIndex = static_cast<int>(SendMessage(hwndList, LB_GETCURSEL, 0, 0));
 		if (focusedIndex != LB_ERR)
 		{
-			int textLength = SendMessage(hwndList, LB_GETTEXTLEN, focusedIndex, 0);
+			const int textLength = static_cast<int>(SendMessage(hwndList, LB_GETTEXTLEN, focusedIndex, 0));
 			if (textLength != LB_ERR)
 			{
 				std::wstring listItemText;
